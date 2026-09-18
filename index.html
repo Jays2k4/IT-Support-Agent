@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI IT Support Assistant</title>
+    <!-- React via CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        :root {
+            --bg-color-start: #EBF8FF;
+            --bg-color-end: #E6FFFA;
+            --text-color: #2D3748;
+            --accent-gradient-start: #63B3ED;
+            --accent-gradient-end: #3182CE;
+            --highlight-color: #81E6D9;
+            --container-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+        }
+
+        body {
+            background: url('Background.gif') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            letter-spacing: 0.3px;
+            line-height: 1.6;
+        }
+
+        #root {
+            width: 100%;
+            max-width: 1600px;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1,
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #718096;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-gradient-start);
+            box-shadow: 0 0 0 4px rgba(99, 179, 237, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(49, 130, 206, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            box-shadow: 0 6px 15px rgba(49, 130, 206, 0.4);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(49, 130, 206, 0.3);
+        }
+
+        button:disabled {
+            background: #A0AEC0;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .response-container {
+            margin-top: 30px;
+            padding: 24px;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--highlight-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .response-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .response-content {
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: #4A5568;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #E53E3E;
+            background-color: #FFF5F5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #E53E3E;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            color: var(--accent-gradient-end);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(99, 179, 237, 0.2);
+            border-top-color: var(--accent-gradient-end);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Lottie Player -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [query, setQuery] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [response, setResponse] = useState(null);
+            const [error, setError] = useState(null);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!query.trim()) return;
+
+                setLoading(true);
+                setError(null);
+                setResponse(null);
+
+                try {
+                    const res = await fetch('http://localhost:8000/api/ticket', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query: query }),
+                    });
+
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.detail || 'Something went wrong');
+                    }
+
+                    const data = await res.json();
+                    setResponse(data);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', width: '100%' }}>
+                    <div className="left-section" style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
+                    </div>
+                    <div className="container" style={{ flex: '0 1 800px', background: 'rgba(255, 255, 255, 0.95)' }}>
+                        <div className="header">
+                            <h1>IT Support Assistant</h1>
+                            <p>Describe your issue, and our AI will help you resolve it.</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <textarea
+                                    placeholder="E.g., My computer is running very slow..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    disabled={loading}
+                                />
+                            </div>
+                            <button type="submit" disabled={loading || !query.trim()}>
+                                {loading ? 'Processing...' : 'Get Support'}
+                            </button>
+                        </form>
+
+                        {loading && (
+                            <div className="loading">
+                                <div className="spinner"></div>
+                                Analyzing your issue...
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="error-message">
+                                <strong>Error:</strong> {error}
+                            </div>
+                        )}
+
+                        {response && (
+                            <div className="response-container">
+                                <div className="response-title">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    AI Support Response
+                                </div>
+                                <div className="response-content">
+                                    {response.ai_response}
+                                </div>
+                                {response.retrieved_context && (
+                                    <div style={{ marginTop: '15px', fontSize: '0.9em', color: '#718096' }}>
+                                        <strong>Related Knowledge Base Entry:</strong><br />
+                                        {response.retrieved_context}
+                                    </div>
+                                )}
+                                <div style={{ marginTop: '15px', fontSize: '0.85em', color: '#A0AEC0' }}>
+                                    Ticket ID: #{response.id} | Status: {response.status}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="right-section" style={{ flex: '1' }}></div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
