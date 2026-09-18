@@ -1,6 +1,6 @@
 # AI-Powered IT Support Assistant
 
-A full-stack application built with FastAPI, SQLite, React, and Google Gemini API to provide automated IT support.
+A full-stack application built with FastAPI, SQLite, React, and Google Gemini API to provide automated IT support in under 45 minutes for a coding assessment round !
 
 ## Project Structure
 - `main.py`: The FastAPI backend application.
